@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-ui.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-exports.min.js"></script>
+    <link href="https://cdn.anychart.com/releases/v8/css/anychart-ui.min.css" type="text/css" rel="stylesheet">
+    <link href="https://cdn.anychart.com/releases/v8/fonts/css/anychart-font.min.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <!-- Image and text -->
+        <nav class="navbar navbar-light bg-light">
+            <a class="navbar-brand">
+                <img src="https://png.pngitem.com/pimgs/s/178-1780522_png-file-rainy-weather-icon-png-white-weather.png"
+                    width="30" height="30" class="d-inline-block align-top" alt="">
+                Weather Dashboard
+            </a>
+            <h3 class="mx-auto"><a class="nabar" id="nabar" style="color: #2c3e50; text-align:center;">Welcome Back {{city}}!</a></h3>
+                <form class="form-inline my-2 my-lg-0" method="POST" action='/result'>
+                <input class="form-control mr-sm-2" id="city" type="text" placeholder="City Name" aria-label="Search"
+                    name="city">
+                <button class="btn btn-outline-success my-2 my-sm-0" i class="bi bi-search"
+                    type="submit">Search</button>
+                <a class="btn btn-outline-success my-2 my-sm-0" href="/login" role="button">Logout</a>
+                    </form>
+        </nav>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Temperature <img
+                            src="https://i.pinimg.com/originals/b2/d6/c2/b2d6c24a4a7f3f0529c2efdaeff54bc5.png"
+                            width="45" height="45" /></h5>
+                    <h6 class="card-subtitle mt-2 text-muted">Relative Temperature</h6>
+                    <p id="temperature">Temperature: {{temp}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Pressure <img
+                            src="https://icon-library.com/images/pressure-icon-png/pressure-icon-png-13.jpg" width="45"
+                            height="45" /></h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Max Pressure</h6>
+                    <p id="pressure">Pressure: {{pressure}}</p>
+
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Humidity <img src="https://cdn-icons-png.flaticon.com/512/728/728093.png"
+                            width="45" height="45" /></h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Relative Humidity</h6>
+                    <p id="humidity">Humidity: {{hum}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Wind-Speed <img
+                            src="https://png.pngtree.com/png-vector/20190726/ourlarge/pngtree-wind-icon-for-your-project-png-image_1599774.jpg"
+                            width="60" height="45" /></h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Relative Wind-Speed</h6>
+                    <p id="wind-speed">Wind-Speed: {{wind}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header">chart</div>
+                <div class="card-body">
+                    <div id="chartjs" style="height: 151px; width: 100%;"></div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-6">
+            <!-- .col-6 -->
+            <div class="card">
+                <div class="card-header">chart</div>
+                <div class="card-body">
+                    <div id="container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.anychart.com/js/8.0.1/anychart-core.min.js"></script>
+    <script src="https://cdn.anychart.com/js/8.0.1/anychart-pie.min.js"></script>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script>
+
+        window.onload = function () {
+
+            var chart = new CanvasJS.Chart("chartjs", {
+                animationEnabled: true,
+                theme: "light2",
+                title: {
+                    text: "Weather Info ChartBar"
+                },
+                axisY: {
+                    title: "Today"
+                },
+                data: [{
+                    type: "column",
+                    showInLegend: false,
+                    legendMarkerColor: "grey",
+                    dataPoints: [
+                        { y: Number({{sea}}), label: "Sea Level" },
+                        { y: Number({{ground}}), label: "Ground Level" },
+                        { y: Number({{gust}}), label: "gust" },
+                        { y: Number({{feels}}), label: "Feels" },
+                        { y: Number({{visiblity}}), label: "Visiblity" }
+                    ]
+                }]
+            });
+            chart.render();
+        }
+
+
+        anychart.onDocumentReady(function () {
+            // create data set on our data
+            var dataSet = anychart.data.set(getData());
+
+            // map data for the first series, take x from the zero column and value from the first column of data set
+            var firstSeriesData = dataSet.mapAs({ x: 0, value: 1 });
+
+            // map data for the second series, take x from the zero column and value from the second column of data set
+            var secondSeriesData = dataSet.mapAs({ x: 0, value: 2 });
+
+            // map data for the third series, take x from the zero column and value from the third column of data set
+            var thirdSeriesData = dataSet.mapAs({ x: 0, value: 3 });
+
+            // create line chart
+            var chart = anychart.line();
+
+            // turn on chart animation
+            chart.animation(true);
+
+            // set chart padding
+            chart.padding([2, 2, 3, 2]);
+
+            // turn on the crosshair
+            chart.crosshair().enabled(true).yLabel(false).yStroke(null);
+
+            // set tooltip mode to point
+            chart.tooltip().positionMode('point');
+
+            // set chart title text settings
+            chart.title(
+                '.'
+            );
+
+            // set yAxis title
+            chart.yAxis().title('Number');
+            chart.xAxis().labels().padding(1);
+
+            chart.xScale().mode('continuous');
+
+            // create first series with mapped data
+            var firstSeries = chart.line(firstSeriesData);
+            firstSeries.name('Rain');
+            firstSeries.hovered().markers().enabled(true).type('circle').size(4);
+            firstSeries
+                .tooltip()
+                .position('right')
+                .anchor('left-center')
+                .offsetX(5)
+                .offsetY(5);
+
+            // create second series with mapped data
+            var secondSeries = chart.line(secondSeriesData);
+            secondSeries.name('Weather');
+            secondSeries.hovered().markers().enabled(true).type('circle').size(4);
+            secondSeries
+                .tooltip()
+                .position('right')
+                .anchor('left-center')
+                .offsetX(5)
+                .offsetY(5);
+
+            // create third series with mapped data
+            var thirdSeries = chart.line(thirdSeriesData);
+            thirdSeries.name('Wind-Degree');
+            thirdSeries.hovered().markers().enabled(true).type('circle').size(4);
+            thirdSeries
+                .tooltip()
+                .position('right')
+                .anchor('left-center')
+                .offsetX(5)
+                .offsetY(5);
+
+            // turn the legend on
+            chart.legend().enabled(true).fontSize(10).padding([0, 0, 5, 0]);
+
+            // set container id for the chart
+            chart.container('container');
+            // initiate chart drawing
+            chart.draw();
+        });
+
+        function getData() {
+            return [
+                ['1', Number({{rain}}),4,Number({{degree}})],
+                ['2', 7,4,Number({{degree}})],
+                ['3', 8,1,Number({{degree}})],
+                ['4', 9,3,Number({{degree}})]
+
+
+            ];
+        }
+    </script>
+</body>
+
+</html>
